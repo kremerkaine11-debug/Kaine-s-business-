@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Kaine Business</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
+    header { background: #222; color: #fff; padding: 10px 15px; text-align: center; }
+    .tabs { display: flex; background: #333; }
+    .tab { flex: 1; padding: 10px; text-align: center; color: #ccc; cursor: pointer; }
+    .tab.active { background: #555; color: #fff; }
+    .screen { display: none; padding: 15px; }
+    .screen.active { display: block; }
+    input, button { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+    button { background: #222; color: #fff; border: none; cursor: pointer; }
+    button:hover { background: #444; }
+    .card { background: #fff; padding: 10px; margin: 8px 0; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .small { font-size: 12px; color: #666; }
+    .row { display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Kaine Business</h2>
+    <div class="small">City Runner Control Center</div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" data-screen="home">Home</div>
+    <div class="tab" data-screen="customers">Customers</div>
+    <div class="tab" data-screen="jobs">Jobs</div>
+    <div class="tab" data-screen="money">Money</div>
+  </div>
+
+  <!-- Home -->
+  <div id="home" class="screen active">
+    <h3>Today Overview</h3>
+    <div class="card">
+      <div class="row">
+        <div><b>Jobs today:</b></div>
+        <div id="jobsToday">0</div>
+      </div>
+      <div class="row">
+        <div><b>Money today:</b></div>
+        <div id="moneyToday">$0</div>
+      </div>
+    </div>
+    <button onclick="switchScreen('jobs')">Add a job</button>
+    <button onclick="switchScreen('customers')">Add a customer</button>
+  </div>
+
+  <!-- Customers -->
+  <div id="customers" class="screen">
+    <h3>Customers</h3>
+    <div class="card">
+      <input id="custName" placeholder="Name">
+      <input id="custAddress" placeholder="Address">
+      <input id="custPhone" placeholder="Phone">
+      <input id="custNotes" placeholder="Notes (pets, plants, etc.)">
+      <button onclick="addCustomer()">Add customer</button>
+    </div>
+    <div id="customerList"></div>
+  </div>
+
+  <!-- Jobs -->
+  <div id="jobs" class="screen">
+    <h3>Jobs</h3>
+    <div class="card">
+      <input id="jobCustomer" placeholder="Customer name">
+      <input id="jobType" placeholder="Job (porch sweep, plants, trash, pet, etc.)">
+      <input id="jobPrice" type="number" placeholder="Price ($)">
+      <button onclick="addJob()">Add job</button>
+    </div>
+    <div id="jobList"></div>
+  </div>
+
+  <!-- Money -->
+  <div id="money" class="screen">
+    <h3>Money</h3>
+    <div class="card">
+      <div class="row">
+        <div><b>Total earned:</b></div>
+        <div id="totalEarned">$0</div>
+      </div>
+      <div class="row">
+        <div><b>Saved (50%):</b></div>
+        <div id="totalSaved">$0</div>
+      </div>
+      <div class="row">
+        <div><b>For spending:</b></div>
+        <div id="totalSpending">$0</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let customers = JSON.parse(localStorage.getItem('kaine_customers') || '[]');
+    let jobs = JSON.parse(localStorage.getItem('kaine_jobs') || '[]');
+
+    function saveData() {
+      localStorage.setItem('kaine_customers', JSON.stringify(customers));
+      localStorage.setItem('kaine_jobs', JSON.stringify(jobs));
+      updateUI();
+    }
+
+    function switchScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelectorAll('.tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.screen === id);
+      });
+    }
+
+    document.querySelectorAll('.tab').forEach(t => {
+      t.onclick = () => switchScreen(t.dataset.screen);
+    });
+
+    function addCustomer() {
+      const name = document.getElementById('custName').value.trim();
+      const address = document.getElementById('custAddress').value.trim();
+      const phone = document.getElementById('custPhone').value.trim();
+      const notes = document.getElementById('custNotes').value.trim();
+      if (!name) return alert('Name is required');
+      customers.push({ name, address, phone, notes });
+      document.getElementById('custName').value = '';
+      document.getElementById('custAddress').value = '';
+      document.getElementById('custPhone').value = '';
+      document.getElementById('custNotes').value = '';
+      saveData();
+    }
+
+    function addJob() {
+      const customer = document.getElementById('jobCustomer').value.trim();
+      const type = document.getElementById('jobType').value.trim();
+      const price = parseFloat(document.getElementById('jobPrice').value || '0');
+      if (!customer || !type || !price) return alert('Fill all fields');
