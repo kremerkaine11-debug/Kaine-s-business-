@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ASL Animated Teacher</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #101827;
+    color: #f9fafb;
+  }
+
+  header {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #1f2937, #0f172a);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  header h1 {
+    margin: 0;
+    font-size: 2rem;
+  }
+
+  header p {
+    margin-top: 6px;
+    font-size: 0.95rem;
+    color: #9ca3af;
+  }
+
+  #app {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: flex;
+    gap: 24px;
+  }
+
+  /* Teacher area */
+  #teacher-area {
+    flex: 2;
+    background: #111827;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Animated teacher avatar */
+  .teacher-avatar {
+    position: relative;
+    width: 180px;
+    height: 260px;
+    margin: 0 auto 10px auto;
+  }
+
+  .teacher-body {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 180px;
+    background: #2563eb;
+    border-radius: 60px 60px 20px 20px;
+    box-shadow: 0 0 20px rgba(37,99,235,0.6);
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .teacher-head {
+    position: absolute;
+    bottom: 160px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 90px;
+    background: #fbbf24;
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(251,191,36,0.7);
+  }
+
+  .teacher-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #111827;
+    font-size: 0.8rem;
+  }
+
+  .eyes {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+
+  .eye {
+    width: 10px;
+    height: 10px;
+    background: #111827;
+    border-radius: 50%;
+    animation: blink 4s infinite;
+  }
+
+  .mouth {
+    width: 26px;
+    height: 10px;
+    border-radius: 0 0 20px 20px;
+    border: 2px solid #111827;
+    border-top: none;
+  }
+
+  /* Animated waving hand */
+  .teacher-hand {
+    position: absolute;
+    bottom: 120px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    background: #fbbf24;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(251,191,36,0.7);
+    transform-origin: top left;
+    animation: wave 2s ease-in-out infinite;
+  }
+
+  /* Speech bubble */
+  .speech-bubble {
+    position: relative;
+    max-width: 90%;
+    margin: 10px auto 0 auto;
+    background: #1f2937;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    border: 1px solid #374151;
+  }
+
+  .speech-bubble::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 10px 10px 0 10px;
+    border-style: solid;
+    border-color: #1f2937 transparent transparent transparent;
+  }
+
+  /* Lesson content */
+  #lesson-content {
+    margin-top: 18px;
+    border-top: 1px solid #374151;
+    padding-top: 14px;
+  }
+
+  .sign-card {
+    background: #030712;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    border: 1px solid #1f2937;
+  }
+
+  .sign-info {
+    flex: 2;
+  }
+
+  .sign-name {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 4px;
+  }
+
+  .sign-description {
+    font-size: 0.9rem;
+    color: #d1d5db;
+  }
+
+  .sign-image {
+    flex: 1;
+    min-width: 120px;
+    height: 80px;
+    background: radial-gradient(circle at top, #4b5563, #020617);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    border: 1px solid #374151;
+  }
+
+  /* Controls */
+  #controls {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  button {
+    background: #2563eb;
+    color: #f9fafb;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  button:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+  }
+
+  button:active {
+    transform: translateY(1px);
+  }
+
+  /* Sidebar */
+  #sidebar {
+    flex: 1;
+    background: #020617;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+    font-size: 0.9rem;
+  }
+
+  #sidebar h2 {
+    margin-top: 0;
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+
+  #sidebar p {
+    color: #9ca3af;
+    margin-bottom: 8px;
+  }
+
+  /* Animations */
+  @keyframes float {
+    0% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-6px); }
+    100% { transform: translateX(-50%) translateY(0); }
+  }
+
+  @keyframes blink {
+    0%, 90%, 100% { transform: scaleY(1); }
+    92%, 98% { transform: scaleY(0.1); }
+  }
+
+  @keyframes wave {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(18deg); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(18deg); }
+    100% { transform: rotate(0deg); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ASL Animated Teacher</h1>
+  <p>Learn American Sign Language with a guided, animated tutor.</p>
+</header>
+
+<div id="app">
+  <div id="teacher-area">
+    <div class="teacher-avatar">
+      <div class="teacher-body"></div>
+      <div class="teacher-head">
+        <div class="teacher-face">
+          <div class="eyes">
+            <div class="eye"></div>
+            <div class="eye"></div>
+          </div>
+          <div class="mouth"></div>
+        </div>
+      </div>
+      <div class="teacher-hand"></div>
+    </div>
+
+    <div class="speech-bubble" id="speech">
+      Hi! I’m your ASL teacher. Tap “Start Lesson” and I’ll walk you through the basics.
+    </div>
+
+    <div id="lesson-content"></div>
+
+    <div id="controls">
+      <button onclick="startLesson()">Start Lesson</button>
+      <button onclick="nextLesson()">Next</button>
+      <button onclick="practiceMode()">Practice</button>
+    </div>
+  </div>
+
+  <div id="sidebar">
+    <h2>Lesson Path</h2>
+    <p>1. ASL alphabet (A–C)</p>
+    <p>2. Basic greetings</p>
+    <p>3. Practice with mirror</p>
+    <p>More lessons can be added: numbers, colors, sentences, conversations.</p>
+    <hr style="border-color:#1f2937;">
+    <p><strong>Tip:</strong> Use this site with real ASL videos for best learning.</p>
+  </div>
+</div>
+
+<script>
+let currentLesson = 0;
+
+function setSpeech(text) {
+  document.getElementById("speech").textContent = text;
+}
+
+function setLessonContent(html) {
+  document.getElementById("lesson-content").innerHTML = html;
+}
+
+function startLesson() {
+  currentLesson = 1;
+  setSpeech("Lesson 1: Let’s start with the ASL alphabet. Watch how I describe A, B, and C.");
+  setLessonContent(`
+    <div class="sign-card">
+      <div class="sign-info">
+        <div class="sign-name">Letter A</div>
+        <div class="sign-description">
+          Make a fist with your thumb resting on the side of your index finger, not tucked inside.
+        </div>
+      </div>
+      <div class="sign-image">Handshape A</div>
+    </div>
+
+    <div class="sign-card">
+      <div class="sign-info">
+        <div class="sign-name">Letter B</div>
+        <div class="sign-description">
+          Hold your hand up, palm forward, fingers together and straight, thumb folded across your palm.
+        </div>
+      </div>
+      <div class="sign-image">Handshape B</div>
+    </div>
+
+    <div class="sign-card">
+      <div class="sign-info">
+        <div class="sign-name">Letter C</div>
+        <div class="sign-description">
+          Curve your hand into the shape of the letter C, palm facing sideways.
+        </div>
+      </div>
+      <div class="sign-image">Handshape C</div>
+    </div>
+  `);
+}
+
+function nextLesson() {
+  if (currentLesson === 0) {
+    startLesson();
+    return;
+  }
+
+  if (currentLesson === 1) {
+    currentLesson = 2;
+    setSpeech("Nice work! Now I’ll teach you some basic ASL greetings.");
+    setLessonContent(`
+      <div class="sign-card">
+        <div class="sign-info">
+          <div class="sign-name">Hello</div>
+          <div class="sign-description">
+            Place your flat hand near your forehead, like a salute, then move it outward away from your head.
+          </div>
+        </div>
+        <div class="sign-image">Hello motion</div>
+      </div>
+
+      <div class="sign-card">
+        <div class="sign-info">
+          <div class="sign-name">Thank You</div>
+          <div class="sign-description">
+            Touch your fingertips to your chin, then move your hand forward and slightly down.
+          </div>
+        </div>
+        <div class="sign-image">Thank You motion</div>
+      </div>
+
+      <div class="sign-card">
+        <div class="sign-info">
+          <div class="sign-name">My Name Is...</div>
+          <div class="sign-description">
+            Sign “MY” with a flat hand on your chest, then “NAME” by tapping two “H” handshapes together, then fingerspell your name.
+          </div>
+        </div>
+        <div class="sign-image">My Name sequence</div>
+      </div>
+    `);
+  } else if (currentLesson === 2) {
+    currentLesson = 3;
+    setSpeech("Now let’s practice together. Imagine I’m in front of you, and copy the movements slowly.");
+    setLessonContent(`
+      <p><strong>Practice step 1:</strong> Stand in front of a mirror.</p>
+      <p><strong>Practice step 2:</strong> Sign “Hello” three times, watching your hand move from forehead outward.</p>
+      <p><strong>Practice step 3:</strong> Sign “Thank You” three times, fingertips from chin forward.</p>
+      <p><strong>Practice step 4:</strong> Put it together: “Hello, my name is [your name]”.</p>
+      <p style="margin-top:8px;color:#9ca3af;">
+        When you’re ready, you can add more lessons to this site: numbers, colors, animals, and full sentences.
+      </p>
+    `);
+  } else {
+    setSpeech("You finished the first set of lessons! Keep practicing daily and add more signs as you go.");
+  }
+}
+
+function practiceMode() {
+  setSpeech("Practice mode: I’ll give you challenges. Try them in front of a mirror.");
+  setLessonContent(`
+    <p><strong>Challenge 1:</strong> Sign the letters A, B, and C without looking at the screen.</p>
+    <p><strong>Challenge 2:</strong> Sign “Hello” and “Thank You” smoothly, like you’re talking to a friend.</p>
+    <p><strong>Challenge 3:</strong> Introduce yourself: “Hello, my name is [your name]”.</p>
+    <p style="margin-top:8px;color:#9ca3af;">
+      You can turn this into a full app later by adding real images or videos for each sign.
+    </p>
+  `);
+}
+</script>
+
+</body>
+</html>
